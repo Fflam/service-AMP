@@ -142,7 +142,7 @@ class Service implements ServiceInterface
             }
 
             $sessionID = $session['sessionID'];
-            if(!isset($session['sessionID']))
+            if(!isset($sessionID))
             {
                 throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
             }
