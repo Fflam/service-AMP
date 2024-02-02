@@ -50,7 +50,7 @@ class Service implements ServiceInterface
         // Check if the URL ends with a slash
         $doesNotEndWithSlash = function ($attribute, $value, $fail) {
             if (preg_match('/\/$/', $value)) {
-                return $fail($attribute.' must not end with a slash.');
+                return $fail('AMP Panel URL must not end with a slash "/".');
             }
         };
 
