@@ -3,6 +3,7 @@
 namespace App\Services\AMP;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use App\Services\ServiceInterface;
 use App\Models\Package;
 use App\Models\Order;
@@ -55,7 +56,7 @@ class Service implements ServiceInterface
             }
         };
 
-        self::api('POST', '/ADSModule/GetDeploymentTemplates', []);
+        self::api('POST', '/ADSModule/GetDeploymentTemplates', ['test']);
 
         return [
             [
@@ -125,31 +126,37 @@ class Service implements ServiceInterface
     public static function api($method, $endpoint, $data = [])
     {
         // retrieve the session ID
-        $session = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ])->post(settings('amp::hostname'). "/API/Core/Login", [
-            'username' => settings('amp::username'),
-            'password' => settings('encrypted::amp::password'),
-            'token' => '',
-            'rememberMe' => false,
-        ]);
+        $sessionID = Cache::get('AMP::SessionID');
+        if(!$sessionID) {
+            $session = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->post(settings('amp::hostname'). "/API/Core/Login", [
+                'username' => settings('amp::username'),
+                'password' => settings('encrypted::amp::password'),
+                'token' => '',
+                'rememberMe' => false,
+            ]);
 
-        if($session->failed())
-        {
-            throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+            if($session->failed())
+            {
+                throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+            }
+
+            $sessionID = $session['sessionID'];
+            if(!isset($session['sessionID']))
+            {
+                throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+            }
+
+            Cache::put('AMP::SessionID', $sessionID, 240);
         }
 
-        $sessionID = $session['sessionID'];
-        if(!isset($session['sessionID']))
-        {
-            throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
-        }
-
-        // make the request
+        // define the URL and data
         $url = settings('amp::hostname'). "/API{$endpoint}";
         $data['SESSIONID'] = $sessionID;
 
+        // make the request
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
