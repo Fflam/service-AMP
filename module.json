@@ -1,0 +1,11 @@
+{
+    "name": "AMP",
+    "alias": "amp",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Services\\AMP\\Providers\\AMPServiceProvider"
+    ],
+    "files": []
+}

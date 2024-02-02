@@ -1,0 +1,25 @@
+{
+    "name": "wemx/service-amp",
+    "type": "laravel-module",
+    "description": "A amp service integration for WemX",
+    "authors": [
+        {
+            "name": "WemX",
+            "email": "mubeen@wemx.net"
+        }
+    ],
+    "extra": {
+        "module-dir": "app/Services",
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Services\\AMP\\": ""
+        }
+    }
+}
