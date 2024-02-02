@@ -56,8 +56,6 @@ class Service implements ServiceInterface
             }
         };
 
-        self::api('POST', '/ADSModule/GetDeploymentTemplates', ['test']);
-
         return [
             [
                 "col" => "col-12",
