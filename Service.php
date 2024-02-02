@@ -2,6 +2,7 @@
 
 namespace App\Services\AMP;
 
+use Illuminate\Support\Facades\Http;
 use App\Services\ServiceInterface;
 use App\Models\Package;
 use App\Models\Order;
@@ -53,6 +54,8 @@ class Service implements ServiceInterface
                 return $fail('AMP Panel URL must not end with a slash "/".');
             }
         };
+
+        self::api('POST', '/ADSModule/GetDeploymentTemplates', []);
 
         return [
             [
@@ -114,6 +117,65 @@ class Service implements ServiceInterface
     public static function setServiceButtons(Order $order): array
     {
         return [];    
+    }
+
+    /**
+     * Init connection with API
+    */
+    public static function api($method, $endpoint, $data = [])
+    {
+        // retrieve the session ID
+        $session = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post(settings('amp::hostname'). "/API/Core/Login", [
+            'username' => settings('amp::username'),
+            'password' => settings('encrypted::amp::password'),
+            'token' => '',
+            'rememberMe' => false,
+        ]);
+
+        if($session->failed())
+        {
+            throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+        }
+
+        $sessionID = $session['sessionID'];
+        if(!isset($session['sessionID']))
+        {
+            throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+        }
+
+        // make the request
+        $url = settings('amp::hostname'). "/API{$endpoint}";
+        $data['SESSIONID'] = $sessionID;
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->$method($url, $data);
+
+
+        if($response->failed())
+        {
+            dd($response, $response->json(), $url);
+
+            if($response->unauthorized() OR $response->forbidden()) {
+                throw new \Exception("[AMP] This action is unauthorized! Confirm that API token has the right permissions");
+            }
+
+            // dd($response);
+            if($response->serverError()) {
+                throw new \Exception("[AMP] Internal Server Error: {$response->status()}");
+            }
+
+            throw new \Exception("[AMP] Failed to connect to the API. Ensure the API details and hostname are valid.");
+        }
+
+        dd($response, $response->json(), $url);
+
+
+        return $response;
     }
 
     /**
