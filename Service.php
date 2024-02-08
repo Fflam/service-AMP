@@ -329,22 +329,6 @@ class Service implements ServiceInterface
         $url = settings('amp::hostname'). "/API{$endpoint}";
         $data['SESSIONID'] = $sessionID;
 
-        // store the instance ID if it's not already stored
-        if(!settings('amp:instanceID')) {
-            // make the request
-            $response = Http::withHeaders([
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->$method(settings('amp::hostname'). "/API/Core/GetModuleInfo", ['SESSIONID' => $sessionID]);
-
-            if($response->failed())
-            {
-                throw new \Exception("[AMP] Failed to retrieve instance ID. Ensure the API details and hostname are valid.");
-            }
-
-            Settings::put('amp:instanceID', $response['InstanceId']);
-        }
-
         // make the request
         $response = Http::withHeaders([
             'Accept' => 'application/json',
