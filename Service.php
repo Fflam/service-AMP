@@ -5,6 +5,8 @@ namespace App\Services\AMP;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Services\ServiceInterface;
+use Illuminate\Http\Request;
+use App\Models\Settings;
 use App\Models\Package;
 use App\Models\Order;
 
@@ -92,7 +94,39 @@ class Service implements ServiceInterface
      */
     public static function setPackageConfig(Package $package): array
     {
-        return [];
+        $templates = Service::api('/ADSModule/GetDeploymentTemplates', [])->collect()->mapWithKeys(function ($item) {
+            return [$item['Id'] => $item['Name']];
+        });
+        
+        return [
+            [
+                "col" => "col-12",
+                "key" => "template",
+                "name" => "Template ",
+                "description" => "Select the template to deploy for this package",
+                "type" => "select",
+                "options" => $templates->toArray(),
+                "save_on_change" => true,
+                "rules" => ['required'],
+            ],
+            [
+                "col" => "col-12",
+                "key" => "post_create_action",
+                "name" => "Post Create Action ",
+                "description" => "Choose what the application does inside the instance",
+                "type" => "select",
+                "options" => [
+                    0 => 'Do Nothing',
+                    1 => 'Update Once',
+                    2 => 'Update Always',
+                    3 => 'Update and Start Once',
+                    4 => 'Update and Start Always',
+                    5 => 'Start Always',
+                ],
+                "save_on_change" => true,
+                "rules" => ['required'],
+            ]
+        ];
     }
 
     /**
@@ -115,21 +149,162 @@ class Service implements ServiceInterface
      */
     public static function setServiceButtons(Order $order): array
     {
-        return [];    
+        return [
+            [
+                "name" => "Login to Panel",
+                "color" => "primary",
+                "href" => settings('amp::hostname'),
+                "target" => "_blank", // optional
+            ],
+        ];    
+    }
+
+    /**
+     * Change the Wisp password
+     */
+    public function changePassword(Order $order, string $newPassword)
+    {
+        try {
+            $ampUser = $order->getExternalUser();
+
+            $response = Service::api('/Core/ResetUserPassword', [
+                'Username' => $ampUser->username,
+                'NewPassword' => $newPassword,
+            ]);
+
+            if($response->failed())
+            {
+                throw new \Exception("AMP failed to reset password. Please try again.");
+            }
+
+            $order->updateExternalPassword($newPassword);
+        } catch (\Exception $error) {
+            return redirect()->back()->withError("Something went wrong, please try again.");
+        }
+
+        return redirect()->back()->withSuccess("Password has been changed");
+    }
+
+    /**
+     * This function is responsible for creating an instance of the
+     * service. This can be anything such as a server, vps or any other instance.
+     * 
+     * @return void
+     */
+    public function create(array $data = [])
+    {
+        // define the order, user and package
+        $order = $this->order;
+        $user = $order->user;
+        $package = $order->package;
+
+        // define user data
+        $externalId = 'WMX'.$order->id;
+        $username = $user->username . rand(1, 1000);
+        $password = str_random(12);
+
+        $server = Service::api('/ADSModule/DeployTemplate', [
+            'TemplateID' => $package->data('template'),
+            'NewUsername' => $username, 
+            'NewPassword' => $password,
+            'NewEmail' => $user->email,
+            'Tag' => $externalId,
+            'FriendlyName' => $package->name,
+            'Secret' => 'secretwemx1',
+            'PostCreate' => $package->data('post_create_action', 0),
+            'RequiredTags' => [],
+            'ExtraProvisionSettings' => [],
+        ]);
+
+        if($server->failed())
+        {
+            throw new \Exception("[AMP] Failed to create instance");
+        }
+
+        $order->createExternalUser([
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        $order->setExternalId((string) $externalId);
+
+        // finally, lets email the user their login details
+        $user->email([
+            'subject' => 'Game Panel Account',
+            'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password}",
+            'button' => [
+                'name' => 'Game Panel',
+                'url' => settings('amp::hostname'),
+            ],
+        ]);
+    }
+
+    /**
+     * Handle the callback from the AMP server
+    */
+    public function callback(Request $request)
+    {
+        ErrorLog('amp:callback', json_encode($request->all()));
+        return response()->json(['success' => true], 200);
+    }
+
+    /**
+     * This function is responsible for suspending an instance of the
+     * service. This method is called when a order is expired or
+     * suspended by an admin
+     * 
+     * @return void
+    */
+    public function suspend(array $data = [])
+    {
+        $order = $this->order;
+        $server = Service::api('/ADSModule/SetInstanceSuspended', [
+            'InstanceName' => $order->external_id,
+            'Suspended' => true,
+        ]);
+    }
+
+    /**
+     * This function is responsible for unsuspending an instance of the
+     * service. This method is called when a order is activated or
+     * unsuspended by an admin
+     * 
+     * @return void
+    */
+    public function unsuspend(array $data = [])
+    {
+        $order = $this->order;
+        $server = Service::api('/ADSModule/SetInstanceSuspended', [
+            'InstanceName' => $order->external_id,
+            'Suspended' => false,
+        ]);
+    }
+
+    /**
+     * This function is responsible for deleting an instance of the
+     * service. This can be anything such as a server, vps or any other instance.
+     * 
+     * @return void
+    */
+    public function terminate(array $data = [])
+    {
+        $order = $this->order;
+        $server = Service::api('/ADSModule/DeleteInstance', [
+            'InstanceName' => $order->external_id,
+        ]);
     }
 
     /**
      * Init connection with API
     */
-    public static function api($method, $endpoint, $data = [])
+    public static function api($endpoint, $data = [])
     {
         // retrieve the session ID
+        $method = 'post';
         $sessionID = Cache::get('AMP::SessionID');
         if(!$sessionID) {
-            $session = Http::withHeaders([
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post(settings('amp::hostname'). "/API/Core/Login", [
+            $session = Http::withHeaders(['Accept' => 'application/json', 'Content-Type' => 'application/json'])->post(settings('amp::hostname'). "/API/Core/Login", 
+            [
                 'username' => settings('amp::username'),
                 'password' => settings('encrypted::amp::password'),
                 'token' => '',
@@ -154,22 +329,34 @@ class Service implements ServiceInterface
         $url = settings('amp::hostname'). "/API{$endpoint}";
         $data['SESSIONID'] = $sessionID;
 
+        // store the instance ID if it's not already stored
+        if(!settings('amp:instanceID')) {
+            // make the request
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->$method(settings('amp::hostname'). "/API/Core/GetModuleInfo", ['SESSIONID' => $sessionID]);
+
+            if($response->failed())
+            {
+                throw new \Exception("[AMP] Failed to retrieve instance ID. Ensure the API details and hostname are valid.");
+            }
+
+            Settings::put('amp:instanceID', $response['InstanceId']);
+        }
+
         // make the request
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ])->$method($url, $data);
 
-
         if($response->failed())
         {
-            dd($response, $response->json(), $url);
-
             if($response->unauthorized() OR $response->forbidden()) {
                 throw new \Exception("[AMP] This action is unauthorized! Confirm that API token has the right permissions");
             }
 
-            // dd($response);
             if($response->serverError()) {
                 throw new \Exception("[AMP] Internal Server Error: {$response->status()}");
             }
@@ -177,69 +364,6 @@ class Service implements ServiceInterface
             throw new \Exception("[AMP] Failed to connect to the API. Ensure the API details and hostname are valid.");
         }
 
-        dd($response, $response->json(), $url);
-
-
         return $response;
     }
-
-    /**
-     * This function is responsible for creating an instance of the
-     * service. This can be anything such as a server, vps or any other instance.
-     * 
-     * @return void
-     */
-    public function create(array $data = [])
-    {
-        return [];
-    }
-
-    /**
-     * This function is responsible for upgrading or downgrading
-     * an instance of this service. This method is optional
-     * If your service doesn't support upgrading, remove this method.
-     * 
-     * Optional
-     * @return void
-    */
-    public function upgrade(Package $oldPackage, Package $newPackage)
-    {
-        return [];
-    }
-
-    /**
-     * This function is responsible for suspending an instance of the
-     * service. This method is called when a order is expired or
-     * suspended by an admin
-     * 
-     * @return void
-    */
-    public function suspend(array $data = [])
-    {
-        return [];
-    }
-
-    /**
-     * This function is responsible for unsuspending an instance of the
-     * service. This method is called when a order is activated or
-     * unsuspended by an admin
-     * 
-     * @return void
-    */
-    public function unsuspend(array $data = [])
-    {
-        return [];
-    }
-
-    /**
-     * This function is responsible for deleting an instance of the
-     * service. This can be anything such as a server, vps or any other instance.
-     * 
-     * @return void
-    */
-    public function terminate(array $data = [])
-    {
-        return [];
-    }
-
 }

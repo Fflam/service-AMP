@@ -43,7 +43,7 @@ class AMPServiceProvider extends ServiceProvider
      * 
      * @return bool
      */
-    protected $routes = false;
+    protected $routes = true;
 
     /**
      * Register views (Resources/views)
