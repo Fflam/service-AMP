@@ -227,22 +227,25 @@ class Service implements ServiceInterface
             throw new \Exception("[AMP] Failed to create instance");
         }
 
-        $order->createExternalUser([
-            'username' => $username,
-            'password' => $password,
-        ]);
-
         $order->setExternalId((string) $externalId);
 
-        // finally, lets email the user their login details
-        $user->email([
-            'subject' => 'Game Panel Account',
-            'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password}",
-            'button' => [
-                'name' => 'Game Panel',
-                'url' => settings('amp::hostname'),
-            ],
-        ]);
+        if(!$externalUser) {
+            // create the external user
+            $order->createExternalUser([
+                'username' => $username,
+                'password' => $password,
+            ]);
+
+            // finally, lets email the user their login details
+            $user->email([
+                'subject' => 'Game Panel Account',
+                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password}",
+                'button' => [
+                    'name' => 'Game Panel',
+                    'url' => settings('amp::hostname'),
+                ],
+            ]);
+        }
     }
 
     /**
