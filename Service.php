@@ -160,7 +160,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Change the Wisp password
+     * Change the AMP password
      */
     public function changePassword(Order $order, string $newPassword)
     {
@@ -358,5 +358,24 @@ class Service implements ServiceInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Test API connection
+    */
+    public static function testConnection()
+    {
+        try {
+            // try to get list of packages through API request
+            $templates = Service::api('/ADSModule/GetDeploymentTemplates', [])->collect()->mapWithKeys(function ($item) {
+                return [$item['Id'] => $item['Name']];
+            });
+        } catch(\Exception $error) {
+            // if try-catch fails, return the error with details
+            return redirect()->back()->withError("Failed to connect to AMP. <br><br>[AMP] {$error->getMessage()}");
+        }
+
+        // if no errors are logged, return a success message
+        return redirect()->back()->withSuccess("Successfully connected with AMP");
     }
 }
