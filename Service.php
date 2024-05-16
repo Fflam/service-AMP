@@ -203,6 +203,12 @@ class Service implements ServiceInterface
         $username = $user->username . rand(1, 1000);
         $password = str_random(12);
 
+        // if AMP user already exists, set the username
+        $externalUser = $order->getExternalUser();
+        if($externalUser) {
+            $username = $externalUser->username;
+        }
+
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
             'NewUsername' => $username, 
@@ -210,7 +216,7 @@ class Service implements ServiceInterface
             'NewEmail' => $user->email,
             'Tag' => $externalId,
             'FriendlyName' => $package->name,
-            'Secret' => 'secretwemx1',
+            'Secret' => 'secretwemx'. $order->id,
             'PostCreate' => $package->data('post_create_action', 0),
             'RequiredTags' => [],
             'ExtraProvisionSettings' => [],
