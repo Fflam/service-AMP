@@ -95,6 +95,10 @@ class Service implements ServiceInterface
     public static function setPackageConfig(Package $package): array
     {
         $templates = Service::api('/ADSModule/GetDeploymentTemplates', [])->collect()->mapWithKeys(function ($item) {
+            if(!isset($item['Id']) OR !isset($item['Name'])) {
+                throw new \Exception("Could not retrieve a list of deployable templates, create a template on AMP first.");
+            }
+            
             return [$item['Id'] => $item['Name']];
         });
         
@@ -368,6 +372,10 @@ class Service implements ServiceInterface
         try {
             // try to get list of packages through API request
             $templates = Service::api('/ADSModule/GetDeploymentTemplates', [])->collect()->mapWithKeys(function ($item) {
+                if(!isset($item['Id']) OR !isset($item['Name'])) {
+                    throw new \Exception("Could not retrieve a list of deployable templates, create a template on AMP first.");
+                }
+
                 return [$item['Id'] => $item['Name']];
             });
         } catch(\Exception $error) {
