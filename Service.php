@@ -213,9 +213,9 @@ class Service implements ServiceInterface
             $username = $externalUser->username;
         }
 
-        $isampuser = Service::api('/Core/GetUserInfo', [
-            'UID' => $user->username;
-        ]);
+  //      $isampuser = Service::api('/Core/GetUserInfo', [
+  //          'UID' => $user->username;
+  //      ]);
 
        // if($isampuser->failed())
        // {
