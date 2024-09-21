@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AMP\Providers;
+namespace App\Services\ServiceAMP\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
@@ -10,12 +10,12 @@ class AMPServiceProvider extends ServiceProvider
     /**
      * @var string $moduleName
      */
-    protected $moduleName = 'AMP';
+    protected $moduleName = 'ServiceAMP';
 
     /**
      * @var string $moduleNameLower
      */
-    protected $moduleNameLower = 'amp';
+    protected $moduleNameLower = 'serviceamp';
 
     /**
      * Register config (Config/config.php)

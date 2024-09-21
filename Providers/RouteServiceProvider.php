@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AMP\Providers;
+namespace App\Services\ServiceAMP\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -12,7 +12,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $moduleNamespace = 'App\Services\AMP\Http\Controllers';
+    protected $moduleNamespace = 'App\Services\ServiceAMP\Http\Controllers';
 
     /**
      * Called before routes are registered.
@@ -47,6 +47,6 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('amp', '/routes.php'));
+            ->group(module_path('serviceamp', '/routes.php'));
     }
 }
