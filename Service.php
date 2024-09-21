@@ -34,7 +34,7 @@ class Service implements ServiceInterface
     {
         return (object)
         [
-          'display_name' => 'AMP CubeCoders',
+          'display_name' => 'AMP CubeCoders test',
           'author' => 'WemX',
           'version' => '1.0.0',
           'wemx_version' => ['dev', '>=1.8.0'],
