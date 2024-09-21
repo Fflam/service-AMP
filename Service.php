@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AMP;
+namespace App\Services\ServiceAMP;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -18,7 +18,7 @@ class Service implements ServiceInterface
      * 
      * @return string
      */
-    public static $key = 'amp'; 
+    public static $key = 'ServiceAMP'; 
 
     public function __construct(Order $order)
     {
@@ -61,21 +61,21 @@ class Service implements ServiceInterface
         return [
             [
                 "col" => "col-12",
-                "key" => "amp::hostname",
+                "key" => "ServiceAMP::hostname",
                 "name" => "Hostname",
                 "description" => "Hostname of the AMP instance",
                 "type" => "url",
                 "rules" => ['required', 'active_url', $doesNotEndWithSlash], // laravel validation rules
             ],
             [
-                "key" => "amp::username",
+                "key" => "ServiceAMP::username",
                 "name" => "Username",
                 "description" => "Username of an administrator on AMP Panel",
                 "type" => "text",
                 "rules" => ['required'], // laravel validation rules
             ],
             [
-                "key" => "encrypted::amp::password",
+                "key" => "encrypted::ServiceAMP::password",
                 "name" => "User Password",
                 "description" => "Password of an administrator on AMP Panel",
                 "type" => "password",
@@ -157,7 +157,7 @@ class Service implements ServiceInterface
             [
                 "name" => "Login to Panel",
                 "color" => "primary",
-                "href" => settings('amp::hostname'),
+                "href" => settings('ServiceAMP::hostname'),
                 "target" => "_blank", // optional
             ],
         ];    
@@ -228,7 +228,7 @@ class Service implements ServiceInterface
 
         if($server->failed())
         {
-            throw new \Exception("[AMP] Failed to create instance");
+            throw new \Exception("[ServiceAMP] Failed to create instance");
         }
 
         $order->setExternalId((string) $externalId);
@@ -246,7 +246,7 @@ class Service implements ServiceInterface
                 'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password}",
                 'button' => [
                     'name' => 'Game Panel',
-                    'url' => settings('amp::hostname'),
+                    'url' => settings('ServiceAMP::hostname'),
                 ],
             ]);
         }
@@ -257,7 +257,7 @@ class Service implements ServiceInterface
     */
     public function callback(Request $request)
     {
-        ErrorLog('amp:callback', json_encode($request->all()));
+        ErrorLog('ServiceAMP:callback', json_encode($request->all()));
         return response()->json(['success' => true], 200);
     }
 
@@ -314,32 +314,32 @@ class Service implements ServiceInterface
     {
         // retrieve the session ID
         $method = 'post';
-        $sessionID = Cache::get('AMP::SessionID');
+        $sessionID = Cache::get('ServiceAMP::SessionID');
         if(!$sessionID) {
-            $session = Http::withHeaders(['Accept' => 'application/json', 'Content-Type' => 'application/json'])->post(settings('amp::hostname'). "/API/Core/Login", 
+            $session = Http::withHeaders(['Accept' => 'application/json', 'Content-Type' => 'application/json'])->post(settings('ServiceAMP::hostname'). "/API/Core/Login", 
             [
-                'username' => settings('amp::username'),
-                'password' => settings('encrypted::amp::password'),
+                'username' => settings('ServiceAMP::username'),
+                'password' => settings('encrypted::ServiceAMP::password'),
                 'token' => '',
                 'rememberMe' => false,
             ]);
 
             if($session->failed())
             {
-                throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+                throw new \Exception("[ServiceAMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
             }
 
             $sessionID = $session['sessionID'];
             if(!isset($sessionID))
             {
-                throw new \Exception("[AMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
+                throw new \Exception("[ServiceAMP] Failed to retrieve session ID. Ensure the API details and hostname are valid.");
             }
 
-            Cache::put('AMP::SessionID', $sessionID, 240);
+            Cache::put('ServiceAMP::SessionID', $sessionID, 240);
         }
 
         // define the URL and data
-        $url = settings('amp::hostname'). "/API{$endpoint}";
+        $url = settings('ServiceAMP::hostname'). "/API{$endpoint}";
         $data['SESSIONID'] = $sessionID;
 
         // make the request
@@ -351,14 +351,14 @@ class Service implements ServiceInterface
         if($response->failed())
         {
             if($response->unauthorized() OR $response->forbidden()) {
-                throw new \Exception("[AMP] This action is unauthorized! Confirm that API token has the right permissions");
+                throw new \Exception("[ServiceAMP] This action is unauthorized! Confirm that API token has the right permissions");
             }
 
             if($response->serverError()) {
-                throw new \Exception("[AMP] Internal Server Error: {$response->status()}");
+                throw new \Exception("[ServiceAMP] Internal Server Error: {$response->status()}");
             }
 
-            throw new \Exception("[AMP] Failed to connect to the API. Ensure the API details and hostname are valid.");
+            throw new \Exception("[ServiceAMP] Failed to connect to the API. Ensure the API details and hostname are valid.");
         }
 
         return $response;
@@ -380,7 +380,7 @@ class Service implements ServiceInterface
             });
         } catch(\Exception $error) {
             // if try-catch fails, return the error with details
-            return redirect()->back()->withError("Failed to connect to AMP. <br><br>[AMP] {$error->getMessage()}");
+            return redirect()->back()->withError("Failed to connect to AMP. <br><br>[ServiceAMP] {$error->getMessage()}");
         }
 
         // if no errors are logged, return a success message

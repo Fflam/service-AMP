@@ -1,11 +1,11 @@
 {
-    "name": "AMP",
-    "alias": "amp",
-    "description": "",
-    "keywords": [],
-    "priority": 0,
-    "providers": [
-        "App\\Services\\AMP\\Providers\\AMPServiceProvider"
-    ],
-    "files": []
+  "name": "ServiceAMP",
+  "alias": "serviceamp",
+  "description": "",
+  "keywords": [],
+  "priority": 0,
+  "providers": [
+    "App\\Services\\ServiceAMP\\Providers\\AMPServiceProvider"
+  ],
+  "files": []
 }
