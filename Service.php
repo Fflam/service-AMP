@@ -217,10 +217,10 @@ class Service implements ServiceInterface
             'UID' => $user->username;
         ]);
 
-        if($isampuser->failed())
-        {
-            throw new \Exception("[ServiceAMP] Failed to find user in isampuser function isampuser->failed()");
-        }
+       // if($isampuser->failed())
+       // {
+       //     throw new \Exception("[ServiceAMP] Failed to find user in isampuser function isampuser->failed()");
+       // }
 		
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
