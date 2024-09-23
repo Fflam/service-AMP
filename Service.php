@@ -213,15 +213,17 @@ class Service implements ServiceInterface
             $username = $externalUser->username;
         }
 
-		$isampuser = Service::api('/Core/GetAMPUserInfo', [
+		$isAmpUser = Service::api('/Core/GetAMPUserInfo', [
 			'Username' => $user->username,
 		]);
 		
-		if($isampuser->failed())
+		if($isAmpUser->failed())
 		{
 			throw new \Exception("[ServiceAMP] Failed to find User Name");
 		}
 		
+        $ampUserObj = json_decode($isAmpUser);
+
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
             'NewUsername' => $username, 
@@ -240,7 +242,7 @@ class Service implements ServiceInterface
             throw new \Exception("[ServiceAMP] Failed to create instance");
         }
 
-		$testusername = $isampuser->Name;
+		$testUserName = $ampUserObj->Name;
 
         $order->setExternalId((string) $externalId);
 
@@ -254,7 +256,7 @@ class Service implements ServiceInterface
             // finally, lets email the user their login details
             $user->email([
                 'subject' => 'Game Panel Account',
-                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password} <br><br><br> Test output user {$testusername} exsists",
+                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password} <br><br><br> Test output user {$testUserName->Name} exsists",
                 'button' => [
                     'name' => 'Game Panel',
                     'url' => settings('ServiceAMP::hostname'),
