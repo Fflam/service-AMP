@@ -217,10 +217,10 @@ class Service implements ServiceInterface
 			'Username' => $user->username,
 		]);
 		
-		if($isAmpUser->failed())
-		{
-			throw new \Exception("[ServiceAMP] Failed to find User Name");
-		}
+		//if($isAmpUser->failed())
+		//{
+		//	throw new \Exception("[ServiceAMP] Failed to find User Name");
+		//}
 		
         $ampUserObj = json_decode($isAmpUser);
 
