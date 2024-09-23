@@ -226,7 +226,7 @@ class Service implements ServiceInterface
 
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
-            'NewUsername' => $$ampUserObj->Name, 
+            'NewUsername' => $ampUserObj->name, 
             'NewPassword' => $password,
             'NewEmail' => $user->email,
             'Tag' => $externalId,
@@ -242,21 +242,21 @@ class Service implements ServiceInterface
             throw new \Exception("[ServiceAMP] Failed to create instance");
         }
 
-		$testUserName = $ampUserObj->Name;
+		$testUserName = $ampUserObj->name;
 
         $order->setExternalId((string) $externalId);
 
         if(!$externalUser) {
             // create the external user
             $order->createExternalUser([
-                'username' => $username,
+                'username' => $ampUserObj-name,
                 'password' => $password,
             ]);
 
             // finally, lets email the user their login details
             $user->email([
                 'subject' => 'Game Panel Account',
-                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password}",
+                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$ampUserObj->name} <br> Password: {$password}",
                 'button' => [
                     'name' => 'Game Panel',
                     'url' => settings('ServiceAMP::hostname'),
