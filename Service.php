@@ -84,6 +84,9 @@ class Service implements ServiceInterface
         ];
     }
 
+    <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+        <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
+    </div>
     /**
      * Define the default package configuration values required when creatig
      * new packages. i.e maximum ram usage, allowed databases and backups etc.
@@ -223,6 +226,24 @@ class Service implements ServiceInterface
 		//}
 		
         $ampUserObj = json_decode($isAmpUser);
+        $testUserName = $ampUserObj->name;
+
+/*
+        <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center z-50">
+            <div class="flex justify-center items-center h-full w-full">
+            <div class="big-white rounded-lg p-8 w-1/2 fade-in modal-content z-50">
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold">Test Modal box</h2>
+                </div>
+                <div><p>user name: $testUserName <br> $ampUserObj
+                </p></div>
+                <div class="mt-8">
+                    <button id="closeModal" class="bg-red-500 text-white px-4 py-2 rouonded font-bold">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+*/
 
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
@@ -242,7 +263,7 @@ class Service implements ServiceInterface
             throw new \Exception("[ServiceAMP] Failed to create instance");
         }
 
-		$testUserName = $ampUserObj->name;
+		
 
         $order->setExternalId((string) $externalId);
 
