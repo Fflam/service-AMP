@@ -172,7 +172,7 @@ class Service implements ServiceInterface
     public function changePassword(Order $order, string $newPassword)
     {
 
-        throw new \Exception("[ServiceAMP] test exception output!");
+        throw new Exception("[ServiceAMP] test exception output!");
 
         try {
             $ampUser = $order->getExternalUser();
