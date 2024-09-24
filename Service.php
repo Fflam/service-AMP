@@ -181,7 +181,10 @@ class Service implements ServiceInterface
                 'Username' => $ampUser->username,
                 'NewPassword' => $newPassword,
             ]);
-            throw new Exception("[ServiceAMP] test exception output!");
+            $var = "this is test data to print from change password AMP"
+            \Log::info(print_r($var, true));
+            //hrow new Exception("[ServiceAMP] test exception output!");
+            
             if($response->failed())
             {
                 throw new \Exception("AMP failed to reset password. Please try again.");
