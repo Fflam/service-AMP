@@ -85,9 +85,9 @@ class Service implements ServiceInterface
         ];
     }
 
-    <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
-        <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
-    </div>
+    //<div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+    //    <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
+    //</div>
     /**
      * Define the default package configuration values required when creatig
      * new packages. i.e maximum ram usage, allowed databases and backups etc.
