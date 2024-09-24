@@ -177,13 +177,14 @@ class Service implements ServiceInterface
 
         try {
             $ampUser = $order->getExternalUser();
+            $test = array("Test2", "Test2");
 
             $response = Service::api('/Core/ResetUserPassword', [
                 'Username' => $ampUser->username,
                 'NewPassword' => $newPassword,
             ]);
             $var = "this is test data to print from change password AMP"
-            Log::info(print_r($var, $order));
+            Log::info($var, $test);
             //hrow new Exception("[ServiceAMP] test exception output!");
             
             if($response->failed())
