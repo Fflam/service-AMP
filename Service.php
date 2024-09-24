@@ -220,30 +220,25 @@ class Service implements ServiceInterface
 			'Username' => $user->username,
 		]);
 		
-		//if($isAmpUser->failed())
-		//{
-		//	throw new \Exception("[ServiceAMP] Failed to find User Name");
-		//}
-		
         $ampUserObj = json_decode($isAmpUser);
         $testUserName = $ampUserObj->name;
 
-/*
-        <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center z-50">
-            <div class="flex justify-center items-center h-full w-full">
-            <div class="big-white rounded-lg p-8 w-1/2 fade-in modal-content z-50">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold">Test Modal box</h2>
-                </div>
-                <div><p>user name: $testUserName <br> $ampUserObj
-                </p></div>
-                <div class="mt-8">
-                    <button id="closeModal" class="bg-red-500 text-white px-4 py-2 rouonded font-bold">Close</button>
-                </div>
-            </div>
-            </div>
-        </div>
-*/
+        $filename = "/home/wemx/phpdebug.log";
+        if(is_writable($filename)) {
+            if (!$fp = fopen($filename, 'a')) {
+                echo "Cannot open file ($filename)";
+                exit;
+            }
+            if (fwrite($fp, $testUserName) === FALSE) {
+                    echo "Cannot write to file ($filename)";
+                    exit;
+            }
+            if (fwrite($fp, $ampUserObj) === FALSE) {
+                    echo "Cannot write to file ($filename)";
+                    exit;
+            }
+            fclose($fp);
+        }
 
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
