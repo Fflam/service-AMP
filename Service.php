@@ -171,6 +171,12 @@ class Service implements ServiceInterface
      */
     public function changePassword(Order $order, string $newPassword)
     {
+
+        if(true)
+        {
+            throw new \Exception("[ServiceAMP] Failed to create instance");
+        }
+
         try {
             $ampUser = $order->getExternalUser();
 
