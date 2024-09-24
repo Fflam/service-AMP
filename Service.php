@@ -184,7 +184,7 @@ class Service implements ServiceInterface
                 'NewPassword' => $newPassword,
             ]);
             $var = "this is test data to print from change password AMP";
-            Log::alert($var, $test);
+            Log::debug($var, $test);
             //hrow new Exception("[ServiceAMP] test exception output!");
             
             if($response->failed())
