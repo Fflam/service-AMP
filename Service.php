@@ -196,7 +196,7 @@ class Service implements ServiceInterface
             //$myFile = fopen("log/amp.log", "a");
             //fwrite($myfile, $var);
             //close($myfile);
-            error_log(print_r($var, true));
+            error_log($var, 3, "/var/www/wemx/storage/log/amp.log");
             //ErrorLog('Service:ServiceAMP',"Testing ErrorLog function username is $ampUser->username");
 
             if($response->failed())
