@@ -11,6 +11,8 @@ use App\Models\Settings;
 use App\Models\Package;
 use App\Models\Order;
 use Exception;
+use Illuminate\Support\Arr;
+use App\Services\ServiceInterface;
 
 class Service implements ServiceInterface
 {
@@ -21,12 +23,18 @@ class Service implements ServiceInterface
      * @return string
      */
     public static $key = 'ServiceAMP'; 
+    public Order $order;
 
     public function __construct(Order $order)
     {
         $this->order = $order;
     }
     
+    public function getDisplayName(): string
+    {
+        $this->order = $order:
+    }
+
     /**
      * Returns the meta data about this Server/Service
      *
@@ -39,7 +47,7 @@ class Service implements ServiceInterface
           'display_name' => 'AMP CubeCoders test',
           'author' => 'fflam',
           'version' => '1.0.0',
-          'wemx_version' => ['dev', '>=1.8.0'],
+          'wemx_version' => ['>=1.8.0'],
         ];
     }
 
@@ -86,9 +94,6 @@ class Service implements ServiceInterface
         ];
     }
 
-    //<div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
-    //    <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
-    //</div>
     /**
      * Define the default package configuration values required when creatig
      * new packages. i.e maximum ram usage, allowed databases and backups etc.
@@ -189,7 +194,7 @@ class Service implements ServiceInterface
             //Log::emergency($var, $test[]);
             //hrow new Exception("[ServiceAMP] test exception output!");
             
-            ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'INFO');
+            ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'info');
 
             if($response->failed())
             {
