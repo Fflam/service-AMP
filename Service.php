@@ -190,7 +190,7 @@ class Service implements ServiceInterface
             ]);
             
             $var = "this is test data to print from change password AMP\n";
-            \Log::info(print-r($var, true));
+            Log::info(print-r($var, true));
             //hrow new Exception("[ServiceAMP] test exception output!");
             $myFile = fopen("log/amp.log", "a");
             fwrite($myfile, $var);
