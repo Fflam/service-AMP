@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Settings;
 use App\Models\Package;
 use App\Models\Order;
+use Exception;
 
 class Service implements ServiceInterface
 {
@@ -36,7 +37,7 @@ class Service implements ServiceInterface
         return (object)
         [
           'display_name' => 'AMP CubeCoders test',
-          'author' => 'WemX',
+          'author' => 'fflam',
           'version' => '1.0.0',
           'wemx_version' => ['dev', '>=1.8.0'],
         ];
@@ -186,7 +187,7 @@ class Service implements ServiceInterface
             $var = "this is test data to print from change password AMP";
             Log::emergency($var, $test[]);
             //hrow new Exception("[ServiceAMP] test exception output!");
-            
+            ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'INFO')
             if($response->failed())
             {
                 throw new \Exception("AMP failed to reset password. Please try again.");
