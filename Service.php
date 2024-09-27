@@ -189,12 +189,13 @@ class Service implements ServiceInterface
                 'NewPassword' => $newPassword,
             ]);
             
-            $var = "this is test data to print from change password AMP";
+            $var = "this is test data to print from change password AMP\n";
             //Log::emergency($var, $test[]);
             //hrow new Exception("[ServiceAMP] test exception output!");
-            $myFile = fopen("/var/www/wemx/storage/log/amp.log", "a") or die("unable to open file amp.log!");
+            $myFile = fopen("log/amp.log", "a");
             fwrite($myfile, $var);
             fclose($myfile);
+            echo 'whoami';
 
             ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'info');
 
