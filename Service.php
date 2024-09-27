@@ -32,7 +32,7 @@ class Service implements ServiceInterface
     
     public function getDisplayName(): string
     {
-        $this->order = $order:
+        $this->order = $order;
     }
 
     /**
