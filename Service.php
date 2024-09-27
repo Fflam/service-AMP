@@ -169,7 +169,7 @@ class Service implements ServiceInterface
                 "color" => "primary",
                 "href" => settings('ServiceAMP::hostname'),
                 "target" => "_blank", // optional
-            ];
+            ] : [] ;
 
         $testButton =
             [
