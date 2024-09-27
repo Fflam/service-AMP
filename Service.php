@@ -195,7 +195,7 @@ class Service implements ServiceInterface
             $myFile = fopen("log/amp.log", "a");
             fwrite($myfile, $var);
             fclose($myfile);
-            echo 'whoami';
+            var_dump($var);
 
             ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'info');
 
