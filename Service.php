@@ -12,6 +12,7 @@ use App\Models\Package;
 use App\Models\Order;
 use Exception;
 use Illuminate\Support\Arr;
+use app\Models\ErrorLog;
 
 class Service implements ServiceInterface
 {
@@ -192,11 +193,11 @@ class Service implements ServiceInterface
             $var = "this is test data to print from change password AMP\n";
             Log::info(print-r($var, true));
             //hrow new Exception("[ServiceAMP] test exception output!");
-            $myFile = fopen("log/amp.log", "a");
-            fwrite($myfile, $var);
-            fclose($myfile);
+            //$myFile = fopen("log/amp.log", "a");
+            //fwrite($myfile, $var);
+            //close($myfile);
 
-            ErrorLog('ServiceAMP::changePassword',"Testing ErrorLog function username is $ampUser->username",'info');
+            ErrorLog('Service:ServiceAMP',"Testing ErrorLog function username is $ampUser->username");
 
             if($response->failed())
             {
