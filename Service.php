@@ -170,6 +170,12 @@ class Service implements ServiceInterface
                 "href" => settings('ServiceAMP::hostname'),
                 "target" => "_blank", // optional
             ],
+            [
+                "name" => "Test Button",
+                "color" => "primary",
+                "href" => "_blank",
+                "target" => "_blank",
+            ],
         ];    
     }
 
