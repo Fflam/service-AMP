@@ -163,20 +163,22 @@ class Service implements ServiceInterface
      */
     public static function setServiceButtons(Order $order): array
     {
-        return [
+        $logToPanel = 
             [
                 "name" => "Login to Panel",
                 "color" => "primary",
                 "href" => settings('ServiceAMP::hostname'),
                 "target" => "_blank", // optional
-            ],
+            ];
+
+        $testButton =
             [
                 "name" => "Test Button",
                 "color" => "primary",
                 "href" => "_blank",
                 "target" => "_blank",
-            ],
-        ];    
+            ];
+        return[$logToPanel, $testButton];    
     }
 
     /**
