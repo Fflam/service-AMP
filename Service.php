@@ -281,7 +281,7 @@ class Service implements ServiceInterface
             // finally, lets email the user their login details
             $user->email([
                 'subject' => 'Game Panel Account',
-                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$ampUserObj->name} <br> Password: {$password}",
+                'content' => "Your account has been created on the game panel. You can login using the following details: <br><br> Username: {$username} <br> Password: {$password} <br><br><br><br>TEST TEST TEST output of get user is! {$isAmpUser}",
                 'button' => [
                     'name' => 'Game Panel',
                     'url' => settings('ServiceAMP::hostname'),
