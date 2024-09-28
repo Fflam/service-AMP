@@ -247,29 +247,11 @@ class Service implements ServiceInterface
 			'Username' => $user->username,
 		]);
 		
-        $ampUserObj = json_decode($isAmpUser);
-        $testUserName = $ampUserObj->name;
-
-        $filename = "/home/wemx/phpdebug.log";
-        if(is_writable($filename)) {
-            if (!$fp = fopen($filename, 'a')) {
-                echo "Cannot open file ($filename)";
-                exit;
-            }
-            if (fwrite($fp, $testUserName) === FALSE) {
-                    echo "Cannot write to file ($filename)";
-                    exit;
-            }
-            if (fwrite($fp, $ampUserObj) === FALSE) {
-                    echo "Cannot write to file ($filename)";
-                    exit;
-            }
-            fclose($fp);
-        }
+        $testUserName = $isAmpUser->name;
 
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
-            'NewUsername' => $ampUserObj->name, 
+            'NewUsername' => $username, 
             'NewPassword' => $password,
             'NewEmail' => $user->email,
             'Tag' => $externalId,
