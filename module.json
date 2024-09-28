@@ -5,7 +5,7 @@
   "keywords": [],
   "priority": 0,
   "providers": [
-    "App\\Services\\ServiceAMP\\Providers\\AMPServiceProvider"
+    "App\\Services\\ServiceAMP\\Providers\\AMPTServiceProvider"
   ],
   "files": []
 }

@@ -5,7 +5,7 @@ namespace App\Services\ServiceAMP\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
-class AMPServiceProvider extends ServiceProvider
+class AMPTServiceProvider extends ServiceProvider
 {
     /**
      * @var string $moduleName
