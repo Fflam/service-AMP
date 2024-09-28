@@ -247,7 +247,7 @@ class Service implements ServiceInterface
 			'Username' => $user->username,
 		]);
 		
-        $testUserName = $isAmpUser->name;
+        $testUserName = $isAmpUser->Name;
 
         $server = Service::api('/ADSModule/DeployTemplate', [
             'TemplateID' => $package->data('template'),
