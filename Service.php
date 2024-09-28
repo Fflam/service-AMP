@@ -197,14 +197,14 @@ class Service implements ServiceInterface
             ]);
             
             $var = "this is test data to print from change password AMP\n";
-            //Log::info(print-r($var, true));
+            Log::info(print-r($var, true));
             //hrow new Exception("[ServiceAMP] test exception output!");
             //$myFile = fopen("log/amp.log", "a");
             //fwrite($myfile, $var);
             //close($myfile);
-            error_log($var, 3, "/var/www/wemx/storage/log/amp.log");
+            //error_log($var, 3, "/var/www/wemx/storage/log/amp.log");
 
-            //ErrorLog('Service:ServiceAMP',"Testing ErrorLog function username is $ampUser->username");
+            ErrorLog('Service:ServiceAMP',"Testing ErrorLog function username is $ampUser->username");
 
             if($response->failed())
             {
