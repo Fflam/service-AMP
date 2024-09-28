@@ -274,7 +274,7 @@ class Service implements ServiceInterface
         if(!$externalUser) {
             // create the external user
             $order->createExternalUser([
-                'username' => $ampUserObj-name,
+                'username' => $username,
                 'password' => $password,
             ]);
 
